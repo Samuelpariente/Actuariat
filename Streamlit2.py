@@ -335,7 +335,32 @@ def affichage_info_dep(code_dep, data_dep, catnat_gaspar, nb_m2):
     # Afficher la figure du barplot
     return fig_timeline, fig_barplot,code_dep,montant_risque_calculé
 
+def spider_chart(data_dep, cod_dep):
+    # Filtrer les données pour le code département spécifié
+    dep_data = data_dep[data_dep['cod_dep'] == float("75")]
+    print(dep_data)
+    # Sélectionner les colonnes pour le spider chart
+    columns = ['Autre', 'Climatique', 'Inondations', 'Mouvements de Terrain']
 
+    # Créer le spider chart avec Plotly Express
+    fig = px.line_polar(dep_data, r=[*dep_data[columns].iloc[0]], theta=columns, line_close=True, 
+                        title=f"Spider Chart - Département {cod_dep}",
+                        width=800, height=600)
+
+
+    # Mettre le titre en gras et spécifier le centrage
+    fig.update_layout(
+        title=dict(text=f"<b>Nombre de catastrophes naturelles observées - département {cod_dep}</b>"),
+        polar=dict(radialaxis=dict(visible=True, showgrid=False)),
+        showlegend=False,  # Masquer la légende
+        plot_bgcolor='black',  # Couleur de fond noire
+    )
+
+    # Remplir la forme tracée
+    fig.update_traces(fill='toself')
+
+    # Afficher le spider chart
+    return fig
 
 
 # Sidebar navigation
@@ -377,25 +402,27 @@ if page == 'Catastrophes naturelles':
         # Utilisation de la fonction
         box = boxplot_proba_cat_nat_annee_prochaine('75', catnat_gaspar)
         st.plotly_chart(box, use_container_width=True)
-        
+        spider = spider_chart(data_dep, '75')
+        st.plotly_chart(spider, use_container_width=True)
+
     with col1:
         fig = plot_catastrophes_by_commune(type_risque, start_date)
         st.plotly_chart(fig, use_container_width=True)
         # Display the list of catastrophes for the chosen risk type
-    categories_risque = {
-        'Inondations': ['Inondations et/ou Coulées de Boue', 'Inondations Remontée Nappe', 'Inondations par choc mécanique des vagues'],
-        'Mouvements de Terrain': ['Mouvement de Terrain', 'Mouvements de terrain différentiels consécutifs à la sécheresse et à la réhydratation des sols', 'Mouvements de terrains (hors sécheresse géotechnique)', 'Glissement et Effondrement de Terrain', 'Glissement et Eboulement Rocheux'],
-        'Climatique': ['Sécheresse', 'Chocs Mécaniques liés à l\'action des Vagues', 'Vents Cycloniques', 'Secousse Sismique', 'Tempête', 'Grêle', 'Effondrement et/ou Affaisement', 'Glissement de Terrain', 'Eboulement et/ou Chute de Blocs', 'Poids de la Neige', 'Lave Torrentielle', 'Coulée de Boue', 'Raz de Marée', 'Eruption Volcanique'],
-        'Autre': ['Divers', 'Avalanche', 'Séismes']
-    }
-    # Construct a string with HTML for better formatting
-    html_string = f"<h3>Liste des Catastrophes pour le Risque: {type_risque}</h3><ul>"
-    for cat in categories_risque[type_risque]:
-        html_string += f"<li>{cat}</li>"
-    html_string += "</ul>"
+        categories_risque = {
+            'Inondations': ['Inondations et/ou Coulées de Boue', 'Inondations Remontée Nappe', 'Inondations par choc mécanique des vagues'],
+            'Mouvements de Terrain': ['Mouvement de Terrain', 'Mouvements de terrain différentiels consécutifs à la sécheresse et à la réhydratation des sols', 'Mouvements de terrains (hors sécheresse géotechnique)', 'Glissement et Effondrement de Terrain', 'Glissement et Eboulement Rocheux'],
+            'Climatique': ['Sécheresse', 'Chocs Mécaniques liés à l\'action des Vagues', 'Vents Cycloniques', 'Secousse Sismique', 'Tempête', 'Grêle', 'Effondrement et/ou Affaisement', 'Glissement de Terrain', 'Eboulement et/ou Chute de Blocs', 'Poids de la Neige', 'Lave Torrentielle', 'Coulée de Boue', 'Raz de Marée', 'Eruption Volcanique'],
+            'Autre': ['Divers', 'Avalanche', 'Séismes']
+        }
+        # Construct a string with HTML for better formatting
+        html_string = f"<h3>Liste des Catastrophes pour le Risque: {type_risque}</h3><ul>"
+        for cat in categories_risque[type_risque]:
+            html_string += f"<li>{cat}</li>"
+        html_string += "</ul>"
 
-    # Use markdown to display the HTML string
-    st.markdown(html_string, unsafe_allow_html=True)
+        # Use markdown to display the HTML string
+        st.markdown(html_string, unsafe_allow_html=True)
 
 
     # Call your function and display the plot
