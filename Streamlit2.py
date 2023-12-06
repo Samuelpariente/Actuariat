@@ -124,7 +124,7 @@ def plot_catastrophes_by_commune(type_risque, start_date=None):
 
 def proba_cat_nat_annee_prochaine(cod_dep, catnat_gaspar):
     # Filtrer les catastrophes naturelles pour le département spécifié
-    catnat_dep = catnat_gaspar[catnat_gaspar['cod_dep'] == cod_dep]
+    catnat_dep = catnat_gaspar[catnat_gaspar['cod_dep'] == float(cod_dep)]
 
     # Supprimer les doublons basés sur les colonnes 'dat_deb' et 'cod_dep'
     catnat_dep = catnat_dep.drop_duplicates(subset=['dat_deb', 'cod_dep']).reset_index(drop=True)
