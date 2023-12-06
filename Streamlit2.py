@@ -50,13 +50,13 @@ data_dep = pd.read_csv("data_dep.csv")
 def get_color_scale_by_risk_type(type_risque):
     # Définir des échelles de couleur pour chaque type de risque
     color_scales = {
-        'Inondations': 'teal',
+        'Inondations': 'Teal',
         'Mouvements de Terrain': 'Brwnyl',
-        'Climatique': 'Redor',
-        'Autre': 'Purp',
-        # Ajoutez d'autres types de risque avec leurs échelles de couleur respectives
+        'Climatique': 'amp',
+        'Autre': 'Greys',
     }
     return color_scales[type_risque]
+
 
 
 def plot_catastrophes_by_commune(type_risque, start_date=None):
@@ -158,7 +158,7 @@ def proba_cat_nat_annee_prochaine(cod_dep, catnat_gaspar):
 def boxplot_proba_cat_nat_annee_prochaine(cod_dep, catnat_gaspar):
     # Calculer la probabilité et l'intervalle de confiance pour le département spécifié
     proba_annee_prochaine, intervalle_confiance = proba_cat_nat_annee_prochaine(cod_dep, catnat_gaspar)
-
+    print(proba_annee_prochaine,intervalle_confiance)
     # Créer un objet bar pour le graphique à barres
     bar = go.Figure()
 
@@ -168,18 +168,19 @@ def boxplot_proba_cat_nat_annee_prochaine(cod_dep, catnat_gaspar):
         orientation='h',  # Orientation horizontale pour la boîte à moustaches
         name='Probabilité',
         error_x=dict(type='data', array=[proba_annee_prochaine - intervalle_confiance[0], intervalle_confiance[1] - proba_annee_prochaine], color='black'),
-        width=0.4,  # Largeur des barres
+        width=0.3,  # Largeur des barres
         marker_color='black'  # Couleur de la boîte à moustaches
     ))
 
     # Mettre en forme le layout
     bar.update_layout(
-        title=f'<b>Nombre de catastrophe naturelle dans le département {cod_dep} (1 an) avec Intervalle de Confiance</b>',
-        xaxis=dict(title='Nombre de catastrophe naturelle'),  # Aucun titre pour l'axe x
+        title=f'<b>Nombre de catastrophe naturelle attendue l an prochain dans le département {cod_dep} </b>',
+        xaxis=dict(title='Nombre de catastrophe naturelle', range=[0, max(0, 3* proba_annee_prochaine)]),  # Limiter l'axe x aux valeurs positives
         yaxis=dict(showline=False, showgrid=False, showticklabels=False),  # Axe y invisible
         height=400,  # Hauteur de la figure
         width=1000,  # Largeur de la figure
-        plot_bgcolor='white'  # Couleur de fond
+        plot_bgcolor='white',  # Couleur de fond
+        
     )
 
     # Afficher le graphique à barres
@@ -261,10 +262,10 @@ def plot_pie_chart_by_catastrophe_type(cod_dep, data_dep):
     total = dep_data['Inondations'].sum() + dep_data['Mouvements de Terrain'].sum() + dep_data['Climatique'].sum() + dep_data['Autre'].sum()
 
     # Normaliser les montants en fonction du total
-    dep_data.loc[:, 'Inondations'] = dep_data['Inondations'] / total * dep_data['montant']
-    dep_data.loc[:, 'Mouvements de Terrain'] = dep_data['Mouvements de Terrain'] / total * dep_data['montant']
-    dep_data.loc[:, 'Climatique'] = dep_data['Climatique'] / total * dep_data['montant']
-    dep_data.loc[:, 'Autre'] = dep_data['Autre'] / total * dep_data['montant']
+    dep_data.loc[:, 'Inondations'] = dep_data['Inondations'] *0.35 / total * dep_data['mesure1']
+    dep_data.loc[:, 'Mouvements de Terrain'] = dep_data['Mouvements de Terrain'] *0.45 / total * dep_data['mesure1']
+    dep_data.loc[:, 'Climatique'] = dep_data['Climatique']  *0.25  / total * dep_data['mesure1']
+    dep_data.loc[:, 'Autre'] = dep_data['Autre']*0.55  / total * dep_data['mesure1']
 
 
     # Créer un DataFrame pour le pie chart
@@ -272,16 +273,16 @@ def plot_pie_chart_by_catastrophe_type(cod_dep, data_dep):
     pie_data.columns = ['Type de Catastrophe', 'Montant Accordé']
 
     # Définir des échelles de couleur pour chaque type de catastrophe
-    color_scales = {
-        'Inondations': 'teal',
-        'Mouvements de Terrain': 'Brwnyl',
-        'Climatique': 'Redor',
-        'Autre': 'Purp',
+    color_scales= {
+    'Inondations': '#1D6996',
+    'Mouvements de Terrain': '#CC503E',
+    'Climatique': '#EDAD08',
+    'Autre': '#666666',
     }
 
     # Créer le pie chart avec Plotly Express
     fig = px.pie(pie_data, names='Type de Catastrophe', values='Montant Accordé',
-                 title=f"<b>Répartition du montant sous risque pour le Département {cod_dep}</b>",
+                 title=f"<b>Répartition du montant sous risque pour le département {cod_dep}</b>",
                  color='Type de Catastrophe', color_discrete_map=color_scales)
 
     # Ajuster les dimensions de la figure
@@ -293,10 +294,10 @@ def plot_pie_chart_by_catastrophe_type(cod_dep, data_dep):
 
 # Définir une échelle de couleur pour chaque type de risque
 couleurs_risque = {
-    'Inondations': 'blue',
-    'Mouvements de Terrain': 'brown',
-    'Climatique': 'green',
-    'Autre': 'purple',
+    'Inondations': '#1D6996',
+    'Mouvements de Terrain': '#CC503E',
+    'Climatique': '#EDAD08',
+    'Autre': '#666666',
 }
 
 def affichage_info_dep(code_dep, data_dep, catnat_gaspar, nb_m2):
@@ -318,16 +319,18 @@ def affichage_info_dep(code_dep, data_dep, catnat_gaspar, nb_m2):
 
     # Frise chronologique des catastrophes naturelles
     fig_timeline = px.timeline(filtered_catnat, x_start='dat_deb', x_end='dat_fin', y='type_risque',
+                               title=f"<b>Historique des Catastrophes par Type - Département {code_dep}</b>",
                                category_orders={'type_risque': ['Inondations', 'Mouvements de Terrain', 'Climatique', 'Autre']},
-                               labels={'type_risque': 'Type de Catastrophe Naturelle'},
                                color='type_risque', color_discrete_map=couleurs_risque)
-    fig_timeline.update_layout(width=1000, height=500, plot_bgcolor='white')
+    fig_timeline.update_layout(width=1000, height=500, plot_bgcolor='white', showlegend = False, xaxis_title="Temps", yaxis_title="")
+
 
     # Barplot des sommes des colonnes 'Inondations', 'Mouvements de Terrain', 'Climatique', 'Autre'
     fig_barplot = px.bar(nombre_catastrophes, x='type_risque', y='Nombre de Catastrophes',
                         title=f"<b>Somme des Catastrophes par Type - Département {code_dep}</b>",
                         color='type_risque', color_discrete_map=couleurs_risque)
-    fig_barplot.update_layout(width=800, height=500, plot_bgcolor='white')
+    fig_barplot.update_layout(width=1000, height=500, plot_bgcolor='white', xaxis_title="Type de Catastrophe Naturelle", showlegend = False)
+
 
     # Afficher la figure du barplot
     return fig_timeline, fig_barplot,code_dep,montant_risque_calculé
@@ -336,18 +339,41 @@ def affichage_info_dep(code_dep, data_dep, catnat_gaspar, nb_m2):
 
 
 # Sidebar navigation
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ('Page One', 'Page Two', 'Page Three'))
+st.sidebar.title("Sommaire")
+page = st.sidebar.radio(" ", ("Acceuil",'Catastrophes naturelles', 'Le risque réel', 'Estimer un montant sous risque'))
+if page == "Acceuil":
+    st.title("Challenge Data Visualisation en Actuariat 2023")
+    st.markdown("""
+    
+*Louis Bolzinger*, *Samuel Pariente*
+  
+Dans un contexte d'accélération de la fréquence et de l'intensité des catastrophes naturelles,  
+les assureurs vont devoir s'adapter, évoluer, et être d'autant plus efficace dans le traitement de ces thématiques.  
+La récente tempête Ciaran à infligé des dégats estimés à  1.3 Milliard dd'euros (France Assureurs).   
+Dans ce cadre nous avons construit un outil simplifié, rapide, de visualisation du risque auquel serait soumis une habitation.  
+Il est à destination d'un publique initié, maitrisant sommairement les concepts probabilistes.   
+  
+Composé de 3 planches ou 'Frame', on représentera tout d'abord les risques auquel est soumis notre territoire métropolitain.   
+Ensuite, nous proposerons une manière de représenter le montant sous risque et le visualiserons sur notre territoire.     
+Nous finirons par une Frame interactive pour visualiser concrètement le risque d'une habitation spécifiée.  
 
-if page == 'Page One':
+Nous utiliserons pour cela 3 bases de données opensource:  
+- la base GASPAR : historique des catastrophes naturelles en France
+- la base DVF : historique pour 2022 des transactions immobilières Françaises
+- la base SD : décrivant les surface des logements de chaque département en France https://www.insee.fr/fr/statistiques/7655503?sommaire=7655515
+    """)
+if page == 'Catastrophes naturelles':
     # Streamlit app layout
     st.title('Visualisation des Catastrophes Naturelles')
     col1, col2 = st.columns(2)
     with col2:
         # Sidebar for user inputs
-        st.markdown("##### Il existait une dizaine de type de catastrophes naturelles, nous avons choisist de les regrouper sous 4 catégories pour faciliter leur visualisation.   On propose également un approche simplifiée pour représenter le risque à venir d'une potentielle catastrophe naturelle du département concerné.  Notons que note approche reste sommaire (simple loi de poisson), compte tenu du sujet 'visualisation' (et non prédiction)")
-        type_risque = st.selectbox('Choisir le type de risque', ['Inondations', 'Mouvements de Terrain', 'Climatique', 'Autre'])
-        start_date = st.date_input('Choisir la date de début', value=pd.to_datetime('2022-01-01'))
+        st.markdown("Il existe plusieurs dizaines de catégories de catastrophes naturelles. pour simplifier leur visualisation, nous les réprésenterons sous 4 grandes catégories 'Autre','Climatique', 'Inondations' et 'Mouvements de Terrain'. Nous proposons une approche simplifiée du nombre de catastrophes à venir avec un intervalle de confiance construit à l'aide d'une loi de Poisson. Ces indicateurs donnent un aperçu global des aléas auquel est soumis notre territoire. ")
+        col11, col12 = st.columns(2)
+        with col11:
+            type_risque = st.selectbox('Choisir le type de risque', ['Inondations', 'Mouvements de Terrain', 'Climatique', 'Autre'])
+        with col12:
+            start_date = st.date_input('Choisir la date de début', value=pd.to_datetime('2022-01-01'))
         # Utilisation de la fonction
         box = boxplot_proba_cat_nat_annee_prochaine('75', catnat_gaspar)
         st.plotly_chart(box, use_container_width=True)
@@ -373,10 +399,11 @@ if page == 'Page One':
 
 
     # Call your function and display the plot
-if page == 'Page Two':
+if page == 'Le risque réel':
+    st.title("Le risque réel auquel est soumis notre territoire")
     col1, col2 = st.columns(2)
     with col2:
-        st.header("Configuration des filtres")
+        st.markdown("#### Configuration des filtres")
         col11, col12 = st.columns(2)
         with col11:
             start_date = st.date_input("Date de début", value=pd.to_datetime('2022-01-01'))
@@ -398,6 +425,11 @@ if page == 'Page Two':
         # Utilisation de la fonction avec une date de début, une date de fin et un code de région spécifiques
         fig = plot_sales_and_disasters(start_date,end_date, cod_dep, catnat_gaspar)
         st.plotly_chart(fig, use_container_width=True)
+
+        st.markdown("""
+        Pour notre seconde Frame, nous voulons voir s'il existe une potentielle corrélation entre la survenance d'une catastrophe naturelle sur le marché immobilier, que ce soit en volume de transaction ou en prix moyen du m2. 
+        
+        Nous proposons également une définition du montant sous risque, que nous disposerons sur une carte de la France. En effet, ce montant varie selon la veleur du bien assuré, mais également la sévérité lié au type de catastrophes fréquente dans son département. Nous avons pris la liberté de pondérer le % de destruction d'un type de catastrophe.""")
     with col1:
         # Déterminer les trois valeurs maximales à exclure
         max_values_to_exclude = data_dep['mesure1'].nlargest(10).values
@@ -440,7 +472,9 @@ if page == 'Page Two':
         pie = plot_pie_chart_by_catastrophe_type(cod_dep, data_dep)
         st.plotly_chart(pie, use_container_width=True)
         
-if page == 'Page Three':
+if page == 'Estimer un montant sous risque':
+    st.title("Estimer un montant sous risque")
+
     col1, col2 = st.columns(2)
     with col1:
         # Example list of region codes
@@ -502,7 +536,7 @@ if page == 'Page Three':
             </style>
             <div class="bottom-center-container">
                 <div class="animated-text">
-                    <span class="info-label">Montant à Risque (calculé):</span>
+                    <span class="info-label">Montant à Risque:</span>
                     <span class="info-value">{int(m)} €</span>
                 </div>
             </div>
