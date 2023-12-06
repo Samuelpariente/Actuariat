@@ -11,9 +11,36 @@ from scipy.stats import poisson
 
 st.set_page_config(layout="wide")
 
+def load_and_concat_csv(file_path1, file_path2):
+    """
+    Load two CSV files and concatenate them into a single DataFrame.
+
+    Parameters:
+    file_path1 (str): The path to the first CSV file.
+    file_path2 (str): The path to the second CSV file.
+
+    Returns:
+    DataFrame: A pandas DataFrame containing the concatenated data from the two CSV files.
+    """
+    try:
+        # Load the CSV files into DataFrames
+        df1 = pd.read_csv(file_path1)
+        df2 = pd.read_csv(file_path2)
+
+        # Concatenate the DataFrames
+        concatenated_df = pd.concat([df1, df2], ignore_index=True)
+
+        print("Files successfully loaded and concatenated.")
+        return concatenated_df
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+
+
+
 
 # Streamlit app layout
-df_2022 = pd.read_csv("df2022.csv")
+df_2022 = load_and_concat_csv("df2022_1.csv","df2022_2.csv")
 catnat_gaspar =  pd.read_csv("catnat_gaspar_clean.csv")
 catnat_gaspar['dat_deb'] = pd.to_datetime(catnat_gaspar['dat_deb'])
 catnat_gaspar['dat_deb'] = pd.to_datetime(catnat_gaspar['dat_deb'])
@@ -431,27 +458,44 @@ if page == 'Page Three':
         time,bar,c,m = affichage_info_dep(cod_dep, data_dep, catnat_gaspar, nb_m2)
         st.markdown(f"""
             <style>
+                @keyframes shake {{
+                    0% {{ transform: translate(1px, 1px) rotate(0deg); }}
+                    10% {{ transform: translate(-1px, -2px) rotate(-1deg); }}
+                    20% {{ transform: translate(-3px, 0px) rotate(1deg); }}
+                    30% {{ transform: translate(3px, 2px) rotate(0deg); }}
+                    40% {{ transform: translate(1px, -1px) rotate(1deg); }}
+                    50% {{ transform: translate(-1px, 2px) rotate(-1deg); }}
+                    60% {{ transform: translate(-3px, 1px) rotate(0deg); }}
+                    70% {{ transform: translate(3px, 1px) rotate(-1deg); }}
+                    80% {{ transform: translate(-1px, -1px) rotate(1deg); }}
+                    90% {{ transform: translate(1px, 2px) rotate(0deg); }}
+                    100% {{ transform: translate(1px, -2px) rotate(-1deg); }}
+                }}
+
                 @keyframes fadeIn {{
                     0% {{ opacity: 0; transform: scale(0.5); }}
                     100% {{ opacity: 1; transform: scale(1); }}
                 }}
+
                 .bottom-center-container {{
                     display: flex;
                     justify-content: center;
                     align-items: end;
-                    height: 18vh; /* Adjust the height to push content towards the bottom */
-                    
+                    height: 18vh;
                 }}
+
                 .animated-text {{
-                    animation: fadeIn 2s ease;
-                    font-size: 30px; /* Increased font size */
+                    animation: fadeIn 2s ease, shake 3s ease;
+                    font-size: 30px;
                     margin-bottom: 5px;
                     text-align: center;
                 }}
+
                 .info-label {{
                     color: #000000;
                     font-weight: bold;
                 }}
+
                 .info-value {{
                     color: #FF5722;
                 }}
@@ -463,6 +507,7 @@ if page == 'Page Three':
                 </div>
             </div>
         """, unsafe_allow_html=True)
+
 
     with col2:
         
