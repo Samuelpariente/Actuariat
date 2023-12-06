@@ -525,7 +525,7 @@ if page == 'Estimer un montant sous risque':
 
         # Find the index of the default region code in the list
         default_index = region_codes.index(default_region_code)
-        nb_m2 = st.slider("Choisir m2", min_value=100, max_value=5000, value=1000, step=100)
+        nb_m2 = st.slider("Choisir m2", min_value=100, max_value=5000, value=1000, step=10)
 
         # Create the selectbox with the default selection
         cod_dep = st.selectbox("Code de région", region_codes, index=default_index)
