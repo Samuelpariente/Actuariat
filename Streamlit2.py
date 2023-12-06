@@ -399,10 +399,23 @@ if page == 'Catastrophes naturelles':
             type_risque = st.selectbox('Choisir le type de risque', ['Inondations', 'Mouvements de Terrain', 'Climatique', 'Autre'])
         with col12:
             start_date = st.date_input('Choisir la date de début', value=pd.to_datetime('2022-01-01'))
+        
+        # Example list of region codes
+        region_codes = list(catnat_gaspar['cod_dep'].unique())
+
+        # Define the default region code
+        default_region_code = 75.0  
+
+        # Find the index of the default region code in the list
+        default_index = region_codes.index(default_region_code)
+
+        # Create the selectbox with the default selection
+        cod_dep = st.selectbox("Code de région", region_codes, index=default_index)
+
         # Utilisation de la fonction
-        box = boxplot_proba_cat_nat_annee_prochaine('75', catnat_gaspar)
+        box = boxplot_proba_cat_nat_annee_prochaine(cod_dep, catnat_gaspar)
         st.plotly_chart(box, use_container_width=True)
-        spider = spider_chart(data_dep, '75')
+        spider = spider_chart(data_dep, cod_dep)
         st.plotly_chart(spider, use_container_width=True)
 
     with col1:
