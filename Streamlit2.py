@@ -251,7 +251,7 @@ def plot_sales_and_disasters(start_date, end_date, cod_dep, catnat_gaspar):
         width=1200,
         plot_bgcolor='white',  # Fond blanc
         xaxis=dict(title='Date', showline=True, linecolor='black'),  # Ajouter un titre pour l'axe x et une ligne noire
-        yaxis=dict(title='Prix au m² (€)', showline=True, linecolor='black',  # Ajouter un titre pour l'axe y et une ligne noire
+        yaxis=dict(title='Prix au m² (€)', showline=True, linecolor='black'),  # Ajouter un titre pour l'axe y et une ligne noire
         legend=dict(
             orientation="h",  # Légende horizontale
             xanchor="center",  # Ancrage central
