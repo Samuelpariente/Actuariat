@@ -366,7 +366,7 @@ def spider_chart(data_dep, cod_dep):
 # Sidebar navigation
 st.sidebar.title("Sommaire")
 page = st.sidebar.radio(" ", ("Acceuil",'Catastrophes naturelles', 'Le risque réel', 'Estimer un montant sous risque'))
-if page == "Acceuil":
+if page == "Accueil":
     st.title("Challenge Data Visualisation en Actuariat 2023")
     st.markdown("""
     
