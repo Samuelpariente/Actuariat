@@ -337,7 +337,7 @@ def affichage_info_dep(code_dep, data_dep, catnat_gaspar, nb_m2):
 
 def spider_chart(data_dep, cod_dep):
     # Filtrer les données pour le code département spécifié
-    dep_data = data_dep[data_dep['cod_dep'] == float("75")]
+    dep_data = data_dep[data_dep['cod_dep'] == float(cod_dep)]
     print(dep_data)
     # Sélectionner les colonnes pour le spider chart
     columns = ['Autre', 'Climatique', 'Inondations', 'Mouvements de Terrain']
