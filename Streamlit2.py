@@ -41,7 +41,7 @@ def load_and_concat_csv(file_path1, file_path2):
 
 # Streamlit app layout
 df_2022 = load_and_concat_csv("df2022_1.csv","df2022_2.csv")
-catnat_gaspar =  pd.read_csv("catnat_gaspar_clean.csv")
+catnat_gaspar =  load_and_concat_csv("catnat_gaspar_clean.csv_1.csv","catnat_gaspar_clean.csv_2.csv")
 catnat_gaspar['dat_deb'] = pd.to_datetime(catnat_gaspar['dat_deb'])
 catnat_gaspar['dat_deb'] = pd.to_datetime(catnat_gaspar['dat_deb'])
 data_dep = pd.read_csv("data_dep.csv")
