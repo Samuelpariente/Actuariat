@@ -1,3 +1,6 @@
 catnat_gaspar_clean.csv filter=lfs diff=lfs merge=lfs -text
 df2022_1.csv filter=lfs diff=lfs merge=lfs -text
 df2022_2.csv filter=lfs diff=lfs merge=lfs -text
+df2022_ filter=lfs diff=lfs merge=lfs -text
+df2022_1 filter=lfs diff=lfs merge=lfs -text
+df2022_2 filter=lfs diff=lfs merge=lfs -text
