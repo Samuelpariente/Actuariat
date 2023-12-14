@@ -20,7 +20,7 @@ def load_and_concat_csv(file_path1, file_path2):
     file_path2 (str): The path to the second CSV file.
 
     Returns:
-    DataFrame: A pandas DataFrame containing the concatenated data from the two CSV files  .
+    DataFrame: A pandas DataFrame containing the concatenated data from the two CSV files.
     """
     try:
         # Load the CSV files into DataFrames
