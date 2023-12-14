@@ -13,7 +13,7 @@ st.set_page_config(layout="wide")
 
 def load_and_concat_csv(file_path1, file_path2):
     """
-    Load two CSV files and concatenate them into a single DataFrame.
+    Load two CSV files and concatenate them into a single DataFrame  .
 
     Parameters:
     file_path1 (str): The path to the first CSV file.
